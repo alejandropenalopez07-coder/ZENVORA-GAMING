@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZENVORA GAMING</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#10091b;
+  color:white;
+  font-family:Arial,sans-serif;
+}
+header{
+  background:#24113b;
+  padding:25px 15px;
+  text-align:center;
+  border-bottom:2px solid #a855f7;
+}
+h1{color:#d8a5ff;margin:0}
+main{padding:20px;max-width:700px;margin:auto}
+.card{
+  background:#21152e;
+  border:1px solid #63358a;
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:15px;
+}
+.number{font-size:30px;color:#d8a5ff;font-weight:bold}
+h2{color:#d8a5ff}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 6px;text-align:left;border-bottom:1px solid #49335c}
+th{color:#d8a5ff}
+footer{text-align:center;padding:20px;color:#a99ab8}
+</style>
+</head>
+
+<body>
+<header>
+  <h1>👑 ZENVORA GAMING 👑</h1>
+  <p>PAINEL OFICIAL DO CLÃ</p>
+</header>
+
+<main>
+  <div class="card">
+    <h2>📊 ESTATÍSTICAS</h2>
+    <p>MEMBROS</p>
+    <div class="number" id="members">0</div>
+    <p>PLACAS TOTAIS</p>
+    <div class="number" id="points">0</div>
+  </div>
+
+  <div class="card">
+    <h2>🏆 TOP 10 JOGADORES</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>JOGADOR</th>
+          <th>PLACAS</th>
+        </tr>
+      </thead>
+      <tbody id="ranking">
+        <tr><td colspan="3">Carregando ranking...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer>ZENVORA GAMING © 2026</footer>
+
+<script>
+async function cargarRanking() {
+  try {
+    const respuesta = await fetch('/api/ranking');
+    const datos = await respuesta.json();
+
+    document.getElementById('members').textContent = datos.miembros;
+    document.getElementById('points').textContent = datos.placasTotales;
+
+    document.getElementById('ranking').innerHTML =
+      datos.ranking.map((jugador, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${jugador.jugador}</td>
+          <td>${jugador.placas}</td>
+        </tr>
+      `).join('') || '<tr><td colspan="3">Nenhum jogador ainda</td></tr>';
+
+  } catch (error) {
+    document.getElementById('ranking').innerHTML =
+      '<tr><td colspan="3">Erro ao carregar ranking</td></tr>';
+  }
+}
+
+cargarRanking();
+setInterval(cargarRanking, 10000);
+</script>
+</body>
+</html>
