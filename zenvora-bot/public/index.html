@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZENVORA GAMING</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #090914;
+  color: white;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+header {
+  background: #171329;
+  border: 1px solid #6c42b8;
+  border-radius: 15px;
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  color: #b98aff;
+  font-size: 25px;
+}
+
+header p {
+  color: #aaa;
+  margin-top: 8px;
+}
+
+h2 {
+  margin: 20px 0 12px;
+  color: #c9a5ff;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.card {
+  background: #171329;
+  border: 1px solid #342653;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.card p {
+  color: #aaa;
+  font-size: 13px;
+}
+
+.card strong {
+  display: block;
+  font-size: 25px;
+  margin-top: 10px;
+  color: #c49aff;
+}
+
+.panel {
+  background: #171329;
+  border: 1px solid #342653;
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 15px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+td, th {
+  padding: 12px 5px;
+  border-bottom: 1px solid #342653;
+  text-align: left;
+  font-size: 13px;
+}
+
+th {
+  color: #c49aff;
+}
+
+footer {
+  color: #777;
+  text-align: center;
+  margin-top: 30px;
+  font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>👑 ZENVORA GAMING</h1>
+  <p>Panel de administración del clan</p>
+</header>
+
+<h2>📊 Resumen del clan</h2>
+
+<div class="cards">
+  <div class="card">
+    <p>MIEMBROS</p>
+    <strong id="members">0</strong>
+  </div>
+
+  <div class="card">
+    <p>PLACAS TOTALES</p>
+    <strong id="points">0</strong>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>🏆 TOP 10 DEL CLAN</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Jugador</th>
+        <th>Placas</th>
+      </tr>
+    </thead>
+
+    <tbody id="ranking">
+      <tr>
+        <td colspan="3">Esperando conexión con el bot...</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  ZENVORA GAMING © 2026
+</footer>
+
+</body>
+</html>
