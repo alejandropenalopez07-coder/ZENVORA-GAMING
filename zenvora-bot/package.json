@@ -1,0 +1,16 @@
+{
+  "name": "zenvora-gaming",
+  "version": "1.0.0",
+  "description": "Bot oficial de ZENVORA GAMING para WhatsApp",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.18",
+    "pino": "^9.6.0"
+  }
+}
