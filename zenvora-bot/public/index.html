@@ -146,5 +146,33 @@ footer {
   ZENVORA GAMING © 2026
 </footer>
 
+  <script>
+async function cargarRanking() {
+  try {
+    const respuesta = await fetch('/api/ranking');
+    const datos = await respuesta.json();
+
+    document.getElementById('members').textContent = datos.miembros;
+    document.getElementById('points').textContent = datos.placasTotales;
+
+    document.getElementById('ranking').innerHTML =
+      datos.ranking.length
+        ? datos.ranking.map((p, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${p.jugador}</td>
+            <td>${p.placas}</td>
+          </tr>
+        `).join('')
+        : '<tr><td colspan="3">Todavía no hay jugadores.</td></tr>';
+
+  } catch (error) {
+    console.log('Esperando conexión con el servidor.');
+  }
+}
+
+cargarRanking();
+setInterval(cargarRanking, 10000);
+</script>
 </body>
 </html>
