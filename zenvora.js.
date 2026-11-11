@@ -1,0 +1,133 @@
+const fs = require("fs");
+const path = require("path");
+
+const DB_FILE = path.join(__dirname, "zenvora-data.json");
+
+function loadDB() {
+    if (!fs.existsSync(DB_FILE)) {
+        fs.writeFileSync(DB_FILE, JSON.stringify({ groups: {} }, null, 2));
+    }
+    return JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
+}
+
+function saveDB(db) {
+    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+}
+
+function getGroup(db, groupId) {
+    if (!db.groups[groupId]) {
+        db.groups[groupId] = { players: {} };
+    }
+    return db.groups[groupId];
+}
+
+async function isAdmin(sock, groupId, userId) {
+    const metadata = await sock.groupMetadata(groupId);
+    const participant = metadata.participants.find(
+        p => p.id === userId
+    );
+
+    return participant?.admin === "admin" ||
+           participant?.admin === "superadmin";
+}
+
+async function handleZenvora(sock, msg) {
+    try {
+        const groupId = msg.key.remoteJid;
+
+        if (!groupId.endsWith("@g.us")) return;
+
+        const sender = msg.key.participant || msg.key.remoteJid;
+        const text =
+            msg.message?.conversation ||
+            msg.message?.extendedTextMessage?.text || "";
+
+        if (!text.startsWith(".")) return;
+
+        const args = text.trim().split(/\s+/);
+        const command = args[0].toLowerCase();
+
+        const db = loadDB();
+        const group = getGroup(db, groupId);
+
+        if (!group.players[sender]) {
+            group.players[sender] = {
+                placas: 0
+            };
+        }
+
+        if (command === ".placas") {
+            await sock.sendMessage(groupId, {
+                text: `🏆 Tienes ${group.players[sender].placas} placas.`
+            }, { quoted: msg });
+        }
+
+        if (command === ".top") {
+            const ranking = Object.entries(group.players)
+                .sort((a, b) => b[1].placas - a[1].placas)
+                .slice(0, 10);
+
+            if (!ranking.length) return;
+
+            let result = "👑 TOP 10 ZENVORA GAMING\n\n";
+
+            ranking.forEach(([id, data], index) => {
+                result += `${index + 1}. @${id.split("@")[0]} — ${data.placas} placas\n`;
+            });
+
+            await sock.sendMessage(groupId, {
+                text: result,
+                mentions: ranking.map(([id]) => id)
+            }, { quoted: msg });
+        }
+
+        if (command === ".addplacas" ||
+            command === ".delplacas") {
+
+            if (!(await isAdmin(sock, groupId, sender))) {
+                return sock.sendMessage(groupId, {
+                    text: "❌ Solo los administradores pueden usar este comando."
+                }, { quoted: msg });
+            }
+
+            const mentioned =
+                msg.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
+
+            const target = mentioned[0];
+            const amount = Number(args[2]);
+
+            if (!target || !Number.isInteger(amount) || amount <= 0) {
+                return sock.sendMessage(groupId, {
+                    text: `Uso: ${command} @usuario cantidad`
+                }, { quoted: msg });
+            }
+
+            if (!group.players[target]) {
+                group.players[target] = { placas: 0 };
+            }
+
+            if (command === ".addplacas") {
+                group.players[target].placas += amount;
+            } else {
+                group.players[target].placas = Math.max(
+                    0,
+                    group.players[target].placas - amount
+                );
+            }
+
+            saveDB(db);
+
+            return sock.sendMessage(groupId, {
+                text: `✅ Operación realizada.\n👤 @${target.split("@")[0]}\n🏆 Placas: ${group.players[target].placas}`,
+                mentions: [target]
+            }, { quoted: msg });
+        }
+
+        saveDB(db);
+
+    } catch (error) {
+        console.error("Error ZENVORA:", error);
+    }
+}
+
+module.exports = { handleZenvora };
